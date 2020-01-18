@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://mirrors.aliyun.com/pypi/simple/"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+flask = "*"
+flask-mongoengine = "*"
+passlib = "*"
+flask-principal = "*"
+flask-script = "*"
+flask-login = "*"
+flask-restful = "*"
+gevent = "*"
+flask-uploads = "*"
+openpyxl = "*"
+
+[requires]
+python_version = "3.8"

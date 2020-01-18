@@ -1,0 +1,71 @@
+version: "2"
+services:
+  nginx:
+    build:
+      context: ./build/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - ./runtime/frontend:/srv/frontend
+      - ./runtime/static:/srv/static
+    ports:
+      - 80:80
+    networks:
+      - webnet
+  backend:
+    build:
+      context: ./build/backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    container_name: backend
+    environment:
+      - MONGODB_HOST=mongodb
+    volumes:
+      - ./runtime/backend:/srv/backend
+      - ./runtime/static:/srv/static
+      - ./runtime/logs:/srv/logs/logs
+    networks:
+      - webnet
+  prometheus:
+    image: prom/prometheus:v2.15.1
+    restart: unless-stopped
+    user: root
+    container_name: prometheus
+    volumes:
+      - ./runtime/prometheus/data:/prometheus
+      - ./runtime/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - webnet
+  grafana: # flask dashboard 9688
+    image: grafana/grafana:6.5.2
+    restart: unless-stopped
+    user: root
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./runtime/grafana/logs:/var/log/grafana
+      - ./runtime/grafana/data:/var/lib/grafana
+      - ./runtime/grafana/provisioning:/etc/grafana/provisioning
+      - ./runtime/grafana/grafana.ini:/etc/grafana/grafana.ini
+    ports:
+      - 3000:3000
+    networks:
+      - webnet
+  mongodb:
+    image: mongo:3.4
+    restart: unless-stopped
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    # 生产环境去掉端口映射
+    # ports:
+    #   - 27017:27017
+    volumes:
+      - ./runtime/db:/data/db
+    networks:
+      - webnet
+networks: 
+  webnet:

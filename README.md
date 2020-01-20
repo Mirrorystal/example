@@ -122,7 +122,7 @@ yarn run serve
 1. 上传代码
 
 ```bash
-scp -r adsms root@ip:/root
+scp -r example root@ip:/root
 ```
 
 2. 安装docker
